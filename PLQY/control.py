@@ -1,18 +1,15 @@
 import pandas as pd
 import numpy as np
-import pickle as pkl
 import os
-import matplotlib.pyplot as plt
 from time import sleep
 
-from frghardware.plqy.sr830 import SR830
-from frghardware.plqy.ldc502 import LDC502
-from frghardware.plqy.ell6_slider import FilterSlider
-from frghardware.plqy.stepper_control import Stepper
+from PLQY.sr830 import SR830
+from PLQY.ldc502 import LDC502
+from PLQY.ell6_slider import FilterSlider
+from PLQY.stepper_control import Stepper
 
 from tqdm.auto import tqdm
 import requests
-import io
 import json
 
 class PLQY:
