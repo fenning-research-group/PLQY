@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-import os
 from time import sleep
 
 from PLQY.sr830 import SR830
@@ -9,7 +8,6 @@ from PLQY.ell6_slider import FilterSlider
 from PLQY.stepper_control import Stepper
 
 from tqdm.auto import tqdm
-import requests
 import json
 
 class PLQY:
@@ -66,7 +64,7 @@ class PLQY:
             'out' : 10.0,
             'empty' : 30.0
         }
-        self.LASERSTABILIZETIME = 30.0
+        self.LASERSTABILIZETIME = 10.0
 
     def _take_meas(self, sample_name, scan_type, n_avg, time_constant):
 
@@ -158,7 +156,7 @@ class PLQY:
 
 
     def current_mod(self, max_current):
-        turn_on = 294.3
+        turn_on = 295.5
         diff = max_current-turn_on
         setpoint = 0.5*(turn_on+max_current)
         voltage = (2**-0.5)*(diff*0.5)/100
@@ -203,7 +201,7 @@ class PLQY:
 
         plqy = (E_in-(1-a)*E_out)/(X_empty*a)
         plqy_err = np.sqrt((E_in_err**2) + ((E_out_err + a_err)**2) + (X_empty_err**2))
-        print(f"PLQY = {plqy}{self.plus_minus}{plqy_err}")
+        print(f"PLQY = {plqy}{self.plus_minus}{plqy_err*plqy}")
 
         return plqy, plqy_err*plqy
 
