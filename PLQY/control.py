@@ -28,7 +28,7 @@ class PLQY:
         self.lia = SR830('GPIB0::8::INSTR') # connect to the lock-in amplifier
         print('\nConnected to Lock-in Amplifier')
 
-        self.ldc = LDC502('COM24')
+        self.ldc = LDC502('ASRL24::INSTR')
         print('\nConnected to Laser Diode Driver')
 
         self.stepper = Stepper('COM23')
@@ -95,7 +95,9 @@ class PLQY:
     
 
     def take_PLQY(self, sample_name, max_current = 400.0, n_avg = 15, time_constant = 0.03, frequency_setpt = 993.0):
-
+        self.ldc.set_laserOn()
+        self.ldc.set_tecOn()
+        self.ldc.set_modulationOn()
         voltage_setpt, current_setpt = self.current_mod(max_current)
         self.lia.sine_voltage = voltage_setpt
         self.lia.frequency = frequency_setpt
