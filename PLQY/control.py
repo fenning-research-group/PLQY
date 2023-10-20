@@ -94,7 +94,7 @@ class PLQY:
         self.data[sample_name][scan_type] = np.array(raw)
     
 
-    def take_PLQY(self, sample_name, max_current = 400.0, n_avg = 15, time_constant = 0.03, frequency_setpt = 993.0):
+    def take_PLQY(self, sample_name, max_current = 400.0, n_avg = 10, time_constant = 0.03, frequency_setpt = 993.0):
         self.ldc.set_laserOn()
         self.ldc.set_tecOn()
         self.ldc.set_modulationOn()
@@ -102,7 +102,7 @@ class PLQY:
         self.lia.sine_voltage = voltage_setpt
         self.lia.frequency = frequency_setpt
 
-        print('\nSetting Laser Current and waiting to stabilize...')
+        print(f'\nSetting Laser Current to {max_current} and waiting to stabilize...')
         if np.abs(self.ldc.get_laser_current() - current_setpt) > 10:
             self.ldc.set_laserCurrent(current_setpt)
             sleep(self.LASERSTABILIZETIME)
@@ -155,6 +155,12 @@ class PLQY:
 
         with open(f'{sample_name}.json', 'w') as f:
             json.dump(metadata, f, indent=4)
+
+    def take_iJV(self, Sample_name="sample", start_current=780, end_current=300, step=-20):
+        import numpy as np
+        currents = np.arange(start_current, end_current, step)
+        for curr in currents:
+            self.take_PLQY(f'{Sample_name}_{curr}', max_current = curr)
 
 
     def current_mod(self, max_current):
