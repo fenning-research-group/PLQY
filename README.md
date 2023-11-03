@@ -1,11 +1,11 @@
 # PLQY
 The code that runs the automated PLQY setup in the FRG
 # PLQY analysis example
-To analyze intensity dependent PLQY scans to plot implied JV curves, follow PLQY analysis Example. 
+To analyze intensity dependent PLQY scans to plot implied JV curves, follow iJV_analysis_demo. 
 Using the Detector_Responsivity.csv, PowerCurrent_Averaged.csv, and SQ.csv, the PLQY_analysis_general.ipynb notebook will analyze the PLQY data stored in directories named after their sample numbers.  
 ![](Demo_figures/Voc_1Sun.png)
 
-To analyze singular PLQY scans taken at 1 sun, follow PLQY_1sun_analysis.
+To analyze singular PLQY scans taken at 1 sun, follow PLQY_1sun_demo.
 
 # Instructions for using analysis:
 Edit the variable EMISSION_WL to match the peak PL emission value in nm for your sample. 
