@@ -93,6 +93,11 @@ class SR830(Instrument):
         time.sleep(self.POLLING_DELAY)
         return float(magnitude)
 
+    def get_frequency(self):
+        frequency = self.ask("FREQ?")
+        time.sleep(self.POLLING_DELAY)
+        return float(frequency)
+
     def get_theta(self):
         theta = self.ask("OUTP?4")
         time.sleep(self.POLLING_DELAY)
