@@ -91,14 +91,11 @@ class LDC502(Instrument):
     def set_laserModulationBandwidth(self, state):
         """
         For setting the modulation bandwidth to either:
-        1) low bandwidth (10kHz in CC mode) (state="LOW") or 
-        2) high bandwidth (1.2MHz in CC mode) (state="HIGH")
+        1) low bandwidth (10kHz in CC mode) (state=0) or 
+        2) high bandwidth (1.2MHz in CC mode) (state=1)
         """
         self.write("SIBW %d" %state)
         time.sleep(self.POLLINGDELAY)
-
-
-
 
  #    def set_blank(self):
  #        self.write("CMND")

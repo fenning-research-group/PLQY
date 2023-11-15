@@ -4,7 +4,7 @@ import serial
 import sys
 
 
-class fy2300:
+class FY2300:
     """This class is used to control the FeelTech FY2300 signal generator"""
 
     def __init__(self, port, baudrate=9600, timeout=0.5, bytesize=8):
@@ -83,3 +83,8 @@ class fy2300:
 
         message = f"{self.channels[channel]}D{duty:0.0f}"
         self.write_and_read(message)
+
+    def set_frequency(self, channel, f):
+        message = f"{self.channels[channel]}F{f*1000000:0.0f}"
+        self.write_and_read(message)
+

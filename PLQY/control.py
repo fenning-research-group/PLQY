@@ -6,6 +6,7 @@ from PLQY.sr830 import SR830
 from PLQY.ldc502 import LDC502
 from PLQY.ell6_slider import FilterSlider
 from PLQY.stepper_control import Stepper
+from PLQY.fy2300 import FY2300
 
 from tqdm.auto import tqdm
 import json
@@ -33,6 +34,9 @@ class PLQY:
 
         self.stepper = Stepper('COM23')
         print('\nConnected to Stepper Motor')
+
+        self.sigen = FY2300('COM5')
+        print('\nConnected to FY2300 Signal Generator')
         
         self.scan_types = {
             'in_lp' : '\nPut sample in beam',
@@ -99,8 +103,10 @@ class PLQY:
         self.ldc.set_tecOn()
         self.ldc.set_modulationOn()
         voltage_setpt, current_setpt = self.current_mod(max_current)
-        self.lia.sine_voltage = voltage_setpt
-        self.lia.frequency = frequency_setpt
+        print(voltage_setpt)
+        self.sigen.set_amplitude(channel = 1, v= np.round(voltage_setpt, decimals=2))
+        # self.lia.frequency = frequency_setpt
+        self._set_frequency(f = frequency_setpt)
 
         print(f'\nSetting Laser Current to {max_current} and waiting to stabilize...')
         if np.abs(self.ldc.get_laser_current() - current_setpt) > 10:
@@ -156,11 +162,11 @@ class PLQY:
         with open(f'{sample_name}.json', 'w') as f:
             json.dump(metadata, f, indent=4)
 
-    def take_iJV(self, Sample_name="sample", start_current=780, end_current=300, step=-20):
+    def take_iJV(self, Sample_name="sample", start_current=780, end_current=300, step=-20, tc = 0.1):
         import numpy as np
         currents = np.arange(start_current, end_current, step)
         for curr in currents:
-            self.take_PLQY(f'{Sample_name}_{curr}', max_current = curr)
+            self.take_PLQY(f'{Sample_name}_{curr}', max_current = curr, time_constant=tc)
 
 
     def current_mod(self, max_current):
@@ -188,14 +194,14 @@ class PLQY:
         E_out = data['out_lp'].mean()
         E_out_err = data['out_lp'].std()/E_out
 
-        X_in = data['in_nolp'].mean() - E_in
-        X_in_err = (data['in_nolp'].std()/X_in) + E_in_err
+        X_in = data['in_nolp'].mean()
+        X_in_err = (data['in_nolp'].std()/X_in)
 
-        X_out = data['out_nolp'].mean() - E_out
-        X_out_err = (data['out_nolp'].std()/X_out) + E_out_err
+        X_out = data['out_nolp'].mean()
+        X_out_err = (data['out_nolp'].std()/X_out)
 
-        X_empty = data['empty_nolp'].mean() - data['empty_lp'].mean()
-        X_empty_err = (data['empty_nolp'].std()/data['empty_nolp'].mean()) + (data['empty_lp'].std()/data['empty_lp'].mean())
+        X_empty = data['empty_nolp'].mean()
+        X_empty_err = (data['empty_nolp'].std()/data['empty_nolp'].mean())
 
         E_in = E_in*(self.sample_wl/self.sample_resp)
         E_out = E_out*(self.sample_wl/self.sample_resp)
@@ -225,7 +231,7 @@ class PLQY:
         try: # check to make sure the file is in the directory
             # url = "https:/raw.githubusercontent.com/fenning-research-group/Python-Utilities/master/FrgTools/frgtools/Detector_Responsivity.csv"
             # download = requests.get(url).content
-            fid = 'C:\\Users\\PVGroup\\Documents\\GitHub\\Python-Utilities\\FrgTools\\frgtools\\Detector_Responsivity.csv'
+            fid = 'C:\\Users\\PVGroup\\Documents\\GitHub\\Python-Utilities\\FrgTools\\frgtools\\DetectorResponsivity_APD_full.csv'
             # resp = pd.read_csv(url)
             resp = pd.read_csv(fid)
 
@@ -235,6 +241,13 @@ class PLQY:
         except: # if not, tell the user to do so
             print(f'Detector_Responsivity.csv not able to load...check download link in code or internet connectivity:\n{url}')
 
+    def _set_frequency(self, f):
+
+        if f>1e5:
+            print('Frequency above range! Set Below 102kHz')
+        else:
+            self.sigen.set_frequency(channel = 1, f = f)
+            self.sigen.set_frequency(channel = 2, f = f)
 
 
     # def save(self):
