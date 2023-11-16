@@ -4,7 +4,7 @@ import serial
 import sys
 
 
-class FY2300:
+class fy2300:
     """This class is used to control the FeelTech FY2300 signal generator"""
 
     def __init__(self, port, baudrate=9600, timeout=0.5, bytesize=8):
@@ -23,7 +23,7 @@ class FY2300:
         self.connect()
         self.initiate_coms()
         self.channels = {1: "WM", 2: "WF"}
-        self.waves = {"sine": 0, "square": 1}
+        self.waves = {"sine": 0, "square": 1, "half_wave": 18}
 
     def connect(self):
         """Connect to the instument"""
@@ -54,37 +54,48 @@ class FY2300:
         return id.strip()
 
     def set_amplitude(self, channel, v):
+        """Set the amplitude of the signal generator
+
+        Args:
+            channel (int): 1 or 2
+            v (float): amplitude in volts
+        """
+
         message = f"{self.channels[channel]}A{float(v)}"
         self.write_and_read(message)
 
     def set_output_on(self, channel):
+        """Turn on the output of the signal generator
+
+        Args:
+            channel (int): 1 or 2
+        """
         message = f"{self.channels[channel]}N1"
         self.write_and_read(message)
 
     def set_output_off(self, channel):
+        """Turn off the output of the signal generator
+
+        Args:
+            channel (int): 1 or 2"""
+
         message = f"{self.channels[channel]}N0"
         self.write_and_read(message)
 
     def set_waveform(self, channel, waveform, freq, duty=50):
-        """Set up a waveform on the specified channel
+        """Set the waveform of the signal generator
 
         Args:
-            channel (int): 1 or 2 for channel 1 or 2
-            waveform (str): 'sine' or 'square' for example
+            channel (int): 1 or 2
+            waveform (str): "sine", "square", "half_wave"
             freq (float): frequency in Hz
-            duty (int, optional): The duty cycle of the waveform. Defaults to 50.
+            duty (float, optional): duty cycle in %. Defaults to 50.
         """
-
         message = f"{self.channels[channel]}W{self.waves[waveform]}"
         self.write_and_read(message)
-
+        # time.sleep(0.05)
         message = f"{self.channels[channel]}F{freq*1000000:0.0f}"
         self.write_and_read(message)
-
+        # time.sleep(0.05)
         message = f"{self.channels[channel]}D{duty:0.0f}"
         self.write_and_read(message)
-
-    def set_frequency(self, channel, f):
-        message = f"{self.channels[channel]}F{f*1000000:0.0f}"
-        self.write_and_read(message)
-
