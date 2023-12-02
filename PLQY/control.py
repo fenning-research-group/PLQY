@@ -246,8 +246,8 @@ class PLQY:
         if f>1e5:
             print('Frequency above range! Set Below 102kHz')
         else:
-            self.sigen.set_frequency(channel = 1, f = f)
-            self.sigen.set_frequency(channel = 2, f = f)
+            self.sigen.set_frequency(channel = 1, f = 993)
+            self.sigen.set_frequency(channel = 2, f = 993)
 
 
     # def save(self):

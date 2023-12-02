@@ -99,3 +99,13 @@ class fy2300:
         # time.sleep(0.05)
         message = f"{self.channels[channel]}D{duty:0.0f}"
         self.write_and_read(message)
+
+    def set_frequency(self, channel, freq = 993):
+        """Set the frequency of the signal generator
+
+        Args:
+            channel (int): 1 or 2
+            freq (float): frequency in Hz
+        """
+        message = f"{self.channels[channel]}F{freq*1000000:0.0f}"
+        self.write_and_read(message)
