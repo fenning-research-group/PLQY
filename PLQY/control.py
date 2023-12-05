@@ -94,7 +94,7 @@ class PLQY:
         self.data[sample_name][scan_type] = np.array(raw)
     
 
-    def take_PLQY(self, sample_name, max_current = 400.0, n_avg = 10, time_constant = 0.03, frequency_setpt = 993.0):
+    def take_PLQY(self, sample_name, max_current = 740.0, n_avg = 10, time_constant = 0.03, frequency_setpt = 993.0):
         self.ldc.set_laserOn()
         self.ldc.set_tecOn()
         self.ldc.set_modulationOn()
@@ -151,7 +151,7 @@ class PLQY:
         temp = pd.DataFrame()
         for k in self.scan_types.keys():
             temp[k] = self.data[sample_name][k]
-        temp.to_csv(f'{sample_name}.csv', index = False)
+        temp.to_csv(f'{sample_name}_{max_current}.csv', index = False)
 
         with open(f'{sample_name}.json', 'w') as f:
             json.dump(metadata, f, indent=4)
@@ -188,14 +188,14 @@ class PLQY:
         E_out = data['out_lp'].mean()
         E_out_err = data['out_lp'].std()/E_out
 
-        X_in = data['in_nolp'].mean() - E_in
-        X_in_err = (data['in_nolp'].std()/X_in) + E_in_err
+        X_in = data['in_nolp'].mean()
+        X_in_err = (data['in_nolp'].std()/X_in)
 
         X_out = data['out_nolp'].mean() - E_out
-        X_out_err = (data['out_nolp'].std()/X_out) + E_out_err
+        X_out_err = (data['out_nolp'].std()/X_out)
 
-        X_empty = data['empty_nolp'].mean() - data['empty_lp'].mean()
-        X_empty_err = (data['empty_nolp'].std()/data['empty_nolp'].mean()) + (data['empty_lp'].std()/data['empty_lp'].mean())
+        X_empty = data['empty_nolp'].mean()
+        X_empty_err = (data['empty_nolp'].std()/data['empty_nolp'].mean()) 
 
         E_in = E_in*(self.sample_wl/self.sample_resp)
         E_out = E_out*(self.sample_wl/self.sample_resp)
@@ -223,10 +223,7 @@ class PLQY:
             float: the responsivity, arbitrary units
         """
         try: # check to make sure the file is in the directory
-            # url = "https:/raw.githubusercontent.com/fenning-research-group/Python-Utilities/master/FrgTools/frgtools/Detector_Responsivity.csv"
-            # download = requests.get(url).content
-            fid = 'C:\\Users\\PVGroup\\Documents\\GitHub\\Python-Utilities\\FrgTools\\frgtools\\Detector_Responsivity.csv'
-            # resp = pd.read_csv(url)
+            fid = 'C:\\Users\\PVGroup\\Documents\\GitHub\\Python-Utilities\\FrgTools\\frgtools\\DetectorResponsivity_APD_full.csv'
             resp = pd.read_csv(fid)
 
 
@@ -234,15 +231,3 @@ class PLQY:
 
         except: # if not, tell the user to do so
             print(f'Detector_Responsivity.csv not able to load...check download link in code or internet connectivity:\n{url}')
-
-
-
-    # def save(self):
-    #     """Save the raw data from each sample to an individual '.csv' file for later use
-    #     """
-    #     for k in self.data.keys():
-    #         temp = pd.DataFrame()
-    #         for kk in self.data[k].keys():
-    #             if 'plqy' not in kk:
-    #                 temp[kk] = self.data[k][kk]
-    #             temp.to_csv(f'{k}.csv', index = False)
